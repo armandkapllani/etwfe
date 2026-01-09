@@ -11,10 +11,10 @@ from etwfe import ETWFE, etwfe
 def sample_panel_data():
     """Create sample panel data for testing."""
     np.random.seed(42)
-    
+
     n_units = 100
     n_periods = 10
-    
+
     # Create balanced panel
     data = []
     for i in range(n_units):
@@ -25,19 +25,19 @@ def sample_panel_data():
             first_treat = 7  # Late adopters
         else:
             first_treat = 99  # Never treated (control)
-        
+
         for t in range(n_periods):
             # Treatment indicator
             treated = 1 if t >= first_treat else 0
-            
+
             # Outcome with unit FE, time FE, and treatment effect
             unit_fe = np.random.normal(0, 1)
             time_fe = t * 0.1
             treatment_effect = 2.0 * treated
             noise = np.random.normal(0, 0.5)
-            
+
             y = unit_fe + time_fe + treatment_effect + noise
-            
+
             data.append({
                 "id": i,
                 "year": 2000 + t,
@@ -45,7 +45,7 @@ def sample_panel_data():
                 "y": y,
                 "x1": np.random.normal(0, 1),
             })
-    
+
     return pd.DataFrame(data)
 
 
@@ -94,7 +94,7 @@ class TestETWFE:
             ivar="id",
         )
         model.fit()
-        
+
         assert model.model_ is not None
         assert model._fit_data is not None
         assert model.formula_ is not None
@@ -109,9 +109,9 @@ class TestETWFE:
             ivar="id",
         )
         model.fit()
-        
+
         att = model.emfx(type="simple")
-        
+
         assert len(att) == 1
         assert "estimate" in att.columns
         assert "std.error" in att.columns
@@ -128,9 +128,9 @@ class TestETWFE:
             ivar="id",
         )
         model.fit()
-        
+
         event = model.emfx(type="event")
-        
+
         assert len(event) > 0
         assert "event" in event.columns
         assert "estimate" in event.columns
@@ -145,9 +145,9 @@ class TestETWFE:
             ivar="id",
         )
         model.fit()
-        
+
         group = model.emfx(type="group")
-        
+
         assert len(group) > 0
         assert "first_treat" in group.columns
         assert "estimate" in group.columns
@@ -162,9 +162,9 @@ class TestETWFE:
             ivar="id",
         )
         model.fit()
-        
+
         calendar = model.emfx(type="calendar")
-        
+
         assert len(calendar) > 0
         assert "year" in calendar.columns
         assert "estimate" in calendar.columns
@@ -182,7 +182,7 @@ class TestETWFEFunction:
             data=sample_panel_data,
             ivar="id",
         )
-        
+
         assert model.model_ is not None
         assert isinstance(model, ETWFE)
 
@@ -195,7 +195,7 @@ class TestETWFEFunction:
             data=sample_panel_data,
             ivar="id",
         )
-        
+
         att = model.emfx(type="simple")
         assert len(att) == 1
 
@@ -212,7 +212,7 @@ class TestControlGroups:
             data=sample_panel_data,
             cgroup="notyet",
         )
-        
+
         assert model.cgroup == "notyet"
         att = model.emfx(type="simple")
         assert len(att) == 1
@@ -229,7 +229,7 @@ class TestReferences:
             gvar="first_treat",
             data=sample_panel_data,
         )
-        
+
         assert model.tref is not None
         assert model.gref is not None
 
@@ -243,7 +243,7 @@ class TestReferences:
             tref=2000,
             gref=2099,
         )
-        
+
         assert model.tref == 2000
         assert model.gref == 2099
 

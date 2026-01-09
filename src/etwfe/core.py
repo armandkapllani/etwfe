@@ -353,7 +353,7 @@ class ETWFE:
         self.formula_ = formula
         return formula
 
-    def fit(self) -> "ETWFE":
+    def fit(self) -> ETWFE:
         """
         Fit the ETWFE model.
 
