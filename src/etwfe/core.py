@@ -120,8 +120,7 @@ class ETWFE:
 
         if self.family is not None and self.family not in SUPPORTED_FAMILIES:
             raise ValueError(
-                f"Unsupported family '{self.family}'. "
-                f"Supported: {SUPPORTED_FAMILIES - {None}}"
+                f"Unsupported family '{self.family}'. " f"Supported: {SUPPORTED_FAMILIES - {None}}"
             )
 
         # Non-linear non-gaussian: mirror etwfe behavior (no absorbed FE for SEs)
@@ -231,8 +230,10 @@ class ETWFE:
         assert self.xvar is not None
 
         w = (
-            (df[self.gvar].notna()) & (df[self.gvar].astype(int) != int(self.gref))
-        ).astype(float).values
+            ((df[self.gvar].notna()) & (df[self.gvar].astype(int) != int(self.gref)))
+            .astype(float)
+            .values
+        )
         df["_Dtreated_cohort"] = w
 
         x = df[self.xvar]
@@ -276,9 +277,7 @@ class ETWFE:
 
         # Treatment indicator
         if self.cgroup == "notyet":
-            df["_Dtreat"] = (
-                (df["_t"] >= df["_g"]) & (df["_g"] != self.gref)
-            ).astype(float)
+            df["_Dtreat"] = ((df["_t"] >= df["_g"]) & (df["_g"] != self.gref)).astype(float)
             if not self._gref_min_flag:
                 df.loc[df["_t"] >= self.gref, "_Dtreat"] = np.nan
             else:
@@ -290,9 +289,7 @@ class ETWFE:
         # Demean controls by cohort
         for ctrl in self._ctrls:
             df[f"{ctrl}_dm"] = (
-                df.groupby(self.gvar)[ctrl]
-                .transform(lambda x: x - x.mean())
-                .astype(float)
+                df.groupby(self.gvar)[ctrl].transform(lambda x: x - x.mean()).astype(float)
             )
 
         # xvar handling
@@ -308,9 +305,7 @@ class ETWFE:
                     if int(t) == int(self.tref):
                         continue
                     name = f"_t{int(t)}_{dm_col}"
-                    df[name] = (
-                        (df[self.tvar] == t).astype(float) * df[dm_col]
-                    ).astype(float)
+                    df[name] = ((df[self.tvar] == t).astype(float) * df[dm_col]).astype(float)
                     self._xvar_time_dummies.append(name)
 
         # Enforce reference levels
@@ -353,7 +348,7 @@ class ETWFE:
         self.formula_ = formula
         return formula
 
-    def fit(self) -> ETWFE:
+    def fit(self) -> "ETWFE":
         """
         Fit the ETWFE model.
 
@@ -427,8 +422,7 @@ class ETWFE:
         """Get design matrix for new data."""
         if patsy is None:
             raise ImportError(
-                "patsy is required for model-matrix based emfx(). "
-                "Install via: pip install patsy"
+                "patsy is required for model-matrix based emfx(). " "Install via: pip install patsy"
             )
 
         coef_names = self.model_.coef().index.tolist()
@@ -546,9 +540,7 @@ class ETWFE:
             compress = nrows >= 500_000
 
         if compress and self.ivar is not None:
-            warnings.warn(
-                "ivar is not None. Marginal effects calculated without compression."
-            )
+            warnings.warn("ivar is not None. Marginal effects calculated without compression.")
             compress = False
 
         if compress and nrows >= 500_000:
@@ -574,9 +566,7 @@ class ETWFE:
 
         if window is not None:
             w = (window, window) if isinstance(window, int) else window
-            df = df[
-                (df["_t"] >= df["_g"] - w[0]) & (df["_t"] <= df["_g"] + w[1])
-            ].copy()
+            df = df[(df["_t"] >= df["_g"] - w[0]) & (df["_t"] <= df["_g"] + w[1])].copy()
 
         if type == "event":
             df["event"] = (df["_t"] - df["_g"]).astype(int)
@@ -734,8 +724,7 @@ class ETWFE:
         print(f"\nSimple ATT: {att['estimate'].values[0]:.6f} (SE: {se_val:.6f})")
         if not np.isnan(se_val):
             print(
-                f"95% CI: [{att['conf.low'].values[0]:.6f}, "
-                f"{att['conf.high'].values[0]:.6f}]"
+                f"95% CI: [{att['conf.low'].values[0]:.6f}, " f"{att['conf.high'].values[0]:.6f}]"
             )
 
     def plot(

@@ -38,13 +38,15 @@ def sample_panel_data():
 
             y = unit_fe + time_fe + treatment_effect + noise
 
-            data.append({
-                "id": i,
-                "year": 2000 + t,
-                "first_treat": 2000 + first_treat,
-                "y": y,
-                "x1": np.random.normal(0, 1),
-            })
+            data.append(
+                {
+                    "id": i,
+                    "year": 2000 + t,
+                    "first_treat": 2000 + first_treat,
+                    "y": y,
+                    "x1": np.random.normal(0, 1),
+                }
+            )
 
     return pd.DataFrame(data)
 
