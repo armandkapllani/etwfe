@@ -15,8 +15,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pyfixest as pf
-import typing_extensions
-import pyreadr
 
 try:
     import patsy
