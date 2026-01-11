@@ -78,8 +78,6 @@ mod.emfx(type="event")
 mod.plot(type="event")
 ```
 
-![Event Study](https://raw.githubusercontent.com/armandkapllani/etwfe/main/docs/event_study.png)
-
 ## Features
 
 ### Estimation Methods
