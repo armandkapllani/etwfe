@@ -731,9 +731,11 @@ class ETWFE:
         self,
         type: Literal["event", "group", "calendar"] = "event",
         post_only: bool = True,
+        style: Literal["errorbar", "ribbon"] = "errorbar",
         figsize: Tuple[int, int] = (10, 6),
         title: Optional[str] = None,
         color: str = "darkcyan",
+        colors: Optional[List[str]] = None,
         ax: Optional[plt.Axes] = None,
         **kwargs: Any,
     ) -> plt.Axes:
@@ -746,12 +748,17 @@ class ETWFE:
             Type of plot to create.
         post_only : bool
             Whether to include only post-treatment observations.
+        style : {"errorbar", "ribbon"}
+            Plot style. "errorbar" shows point estimates with error bars,
+            "ribbon" shows a line with shaded confidence band.
         figsize : tuple
             Figure size.
         title : str, optional
             Plot title.
         color : str
-            Color for the plot.
+            Color for the plot (used when plotting a single group).
+        colors : list of str, optional
+            Colors for multiple groups when by_xvar=True. If None, uses a default palette.
         ax : matplotlib.axes.Axes, optional
             Axes to plot on.
         **kwargs
@@ -774,28 +781,108 @@ class ETWFE:
         else:
             x_var = self.tvar
 
-        x = mfx[x_var].astype(float).values
-        y = mfx["estimate"].values
+        # Check if we're plotting by xvar (multiple groups)
+        by_xvar = kwargs.get("by_xvar", False)
 
-        if (
-            "conf.low" in mfx.columns
-            and "conf.high" in mfx.columns
-            and not np.isnan(mfx["conf.low"].values).all()
-        ):
-            yerr = [y - mfx["conf.low"].values, mfx["conf.high"].values - y]
-            ax.errorbar(
-                x,
-                y,
-                yerr=yerr,
-                fmt="o",
-                capsize=4,
-                color=color,
-                markersize=8,
-                linewidth=2,
-                capthick=1.5,
-            )
+        if by_xvar and self.xvar and self.xvar in mfx.columns:
+            # Multiple groups - plot each separately
+            groups = mfx[self.xvar].unique()
+
+            # Default color palette if not provided
+            if colors is None:
+                default_colors = [
+                    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728",
+                    "#9467bd", "#8c564b", "#e377c2", "#7f7f7f",
+                ]
+                colors = default_colors[: len(groups)]
+
+            for i, group in enumerate(groups):
+                group_data = mfx[mfx[self.xvar] == group].sort_values(x_var)
+                x = group_data[x_var].astype(float).values
+                y = group_data["estimate"].values
+                c = colors[i % len(colors)]
+                label = f"{self.xvar}={group}"
+
+                has_ci = (
+                    "conf.low" in group_data.columns
+                    and "conf.high" in group_data.columns
+                    and not np.isnan(group_data["conf.low"].values).all()
+                )
+
+                if style == "ribbon":
+                    if has_ci:
+                        ax.fill_between(
+                            x,
+                            group_data["conf.low"].values,
+                            group_data["conf.high"].values,
+                            alpha=0.2,
+                            color=c,
+                            label="_nolegend_",
+                        )
+                    ax.plot(x, y, "-", color=c, linewidth=1.5, label=label)
+                    ax.plot(x, y, "o", color=c, markersize=5)
+                else:  # errorbar
+                    if has_ci:
+                        yerr = [
+                            y - group_data["conf.low"].values,
+                            group_data["conf.high"].values - y,
+                        ]
+                        ax.errorbar(
+                            x,
+                            y,
+                            yerr=yerr,
+                            fmt="o",
+                            capsize=4,
+                            color=c,
+                            markersize=6,
+                            linewidth=1.5,
+                            capthick=1.5,
+                            label=label,
+                        )
+                    else:
+                        ax.plot(x, y, "o", color=c, markersize=6, label=label)
+
+            ax.legend(title=self.xvar, loc="best")
+
         else:
-            ax.plot(x, y, "o", color=color, markersize=8)
+            # Single group
+            x = mfx[x_var].astype(float).values
+            y = mfx["estimate"].values
+
+            has_ci = (
+                "conf.low" in mfx.columns
+                and "conf.high" in mfx.columns
+                and not np.isnan(mfx["conf.low"].values).all()
+            )
+
+            if style == "ribbon":
+                if has_ci:
+                    ax.fill_between(
+                        x,
+                        mfx["conf.low"].values,
+                        mfx["conf.high"].values,
+                        alpha=0.2,
+                        color=color,
+                        label="_nolegend_",
+                    )
+                ax.plot(x, y, "-", color=color, linewidth=1.5)
+                ax.plot(x, y, "o", color=color, markersize=5)
+            else:  # errorbar
+                if has_ci:
+                    yerr = [y - mfx["conf.low"].values, mfx["conf.high"].values - y]
+                    ax.errorbar(
+                        x,
+                        y,
+                        yerr=yerr,
+                        fmt="o",
+                        capsize=4,
+                        color=color,
+                        markersize=8,
+                        linewidth=2,
+                        capthick=1.5,
+                    )
+                else:
+                    ax.plot(x, y, "o", color=color, markersize=8)
 
         ax.axhline(0, color="black", linewidth=0.8, linestyle="-")
 
