@@ -728,190 +728,219 @@ class ETWFE:
             )
 
     def plot(
-        self,
-        type: Literal["event", "group", "calendar"] = "event",
-        post_only: bool = True,
-        style: Literal["errorbar", "ribbon"] = "errorbar",
-        figsize: Tuple[int, int] = (10, 6),
-        title: Optional[str] = None,
-        color: str = "darkcyan",
-        colors: Optional[List[str]] = None,
-        ax: Optional[plt.Axes] = None,
-        **kwargs: Any,
-    ) -> plt.Axes:
-        """
-        Plot marginal effects.
-
-        Parameters
-        ----------
-        type : {"event", "group", "calendar"}
-            Type of plot to create.
-        post_only : bool
-            Whether to include only post-treatment observations.
-        style : {"errorbar", "ribbon"}
-            Plot style. "errorbar" shows point estimates with error bars,
-            "ribbon" shows a line with shaded confidence band.
-        figsize : tuple
-            Figure size.
-        title : str, optional
-            Plot title.
-        color : str
-            Color for the plot (used when plotting a single group).
-        colors : list of str, optional
-            Colors for multiple groups when by_xvar=True. If None, uses a default palette.
-        ax : matplotlib.axes.Axes, optional
-            Axes to plot on.
-        **kwargs
-            Additional arguments passed to emfx().
-
-        Returns
-        -------
-        matplotlib.axes.Axes
-            The plot axes.
-        """
-        mfx = self.emfx(type=type, post_only=post_only, **kwargs)
-
-        if ax is None:
-            _, ax = plt.subplots(figsize=figsize)
-
-        if type == "event":
-            x_var = "event"
-        elif type == "group":
-            x_var = self.gvar
-        else:
-            x_var = self.tvar
-
-        # Check if we're plotting by xvar (multiple groups)
-        by_xvar = kwargs.get("by_xvar", False)
-
-        if by_xvar and self.xvar and self.xvar in mfx.columns:
-            # Multiple groups - plot each separately
-            groups = mfx[self.xvar].unique()
-
-            # Default color palette if not provided
-            if colors is None:
-                default_colors = [
-                    "#1f77b4",
-                    "#ff7f0e",
-                    "#2ca02c",
-                    "#d62728",
-                    "#9467bd",
-                    "#8c564b",
-                    "#e377c2",
-                    "#7f7f7f",
-                ]
-                colors = default_colors[: len(groups)]
-
-            for i, group in enumerate(groups):
-                group_data = mfx[mfx[self.xvar] == group].sort_values(x_var)
-                x = group_data[x_var].astype(float).values
-                y = group_data["estimate"].values
-                c = colors[i % len(colors)]
-                label = f"{self.xvar}={group}"
-
+            self,
+            type: Literal["event", "group", "calendar"] = "event",
+            post_only: bool = True,
+            style: Literal["errorbar", "ribbon"] = "errorbar",
+            figsize: Tuple[int, int] = (10, 6),
+            title: Optional[str] = None,
+            color: str = "darkcyan",
+            colors: Optional[List[str]] = None,
+            ax: Optional[plt.Axes] = None,
+            **kwargs: Any,
+        ) -> plt.Axes:
+            """
+            Plot marginal effects.
+    
+            Parameters
+            ----------
+            type : {"event", "group", "calendar"}
+                Type of plot to create.
+            post_only : bool
+                Whether to include only post-treatment observations.
+            style : {"errorbar", "ribbon"}
+                Plot style. "errorbar" shows point estimates with error bars,
+                "ribbon" shows a line with shaded confidence band.
+            figsize : tuple
+                Figure size.
+            title : str, optional
+                Plot title.
+            color : str
+                Color for the plot (used when plotting a single group).
+            colors : list of str, optional
+                Colors for multiple groups when by_xvar=True. If None, uses a default palette.
+            ax : matplotlib.axes.Axes, optional
+                Axes to plot on.
+            **kwargs
+                Additional arguments passed to emfx().
+    
+            Returns
+            -------
+            matplotlib.axes.Axes
+                The plot axes.
+            """
+            mfx = self.emfx(type=type, post_only=post_only, **kwargs)
+    
+            if ax is None:
+                _, ax = plt.subplots(figsize=figsize)
+    
+            if type == "event":
+                x_var = "event"
+            elif type == "group":
+                x_var = self.gvar
+            else:
+                x_var = self.tvar
+    
+            # Check if we're plotting by xvar (multiple groups)
+            by_xvar = kwargs.get("by_xvar", False)
+    
+            # For event studies, add the -1 reference point with estimate=0
+            if type == "event":
+                if by_xvar and self.xvar and self.xvar in mfx.columns:
+                    # Add reference point for each xvar group
+                    ref_rows = []
+                    for group in mfx[self.xvar].unique():
+                        ref_rows.append({
+                            x_var: -1,
+                            "estimate": 0.0,
+                            "std.error": 0.0,
+                            "conf.low": 0.0,
+                            "conf.high": 0.0,
+                            self.xvar: group,
+                        })
+                    ref_df = pd.DataFrame(ref_rows)
+                    mfx = pd.concat([mfx, ref_df], ignore_index=True)
+                else:
+                    # Single group - add one reference point
+                    if -1 not in mfx[x_var].values:
+                        ref_row = pd.DataFrame([{
+                            x_var: -1,
+                            "estimate": 0.0,
+                            "std.error": 0.0,
+                            "conf.low": 0.0,
+                            "conf.high": 0.0,
+                        }])
+                        mfx = pd.concat([mfx, ref_row], ignore_index=True)
+                
+                mfx = mfx.sort_values(x_var).reset_index(drop=True)
+    
+            if by_xvar and self.xvar and self.xvar in mfx.columns:
+                # Multiple groups - plot each separately
+                groups = mfx[self.xvar].unique()
+    
+                # Default color palette if not provided
+                if colors is None:
+                    default_colors = [
+                        "#1f77b4",
+                        "#ff7f0e",
+                        "#2ca02c",
+                        "#d62728",
+                        "#9467bd",
+                        "#8c564b",
+                        "#e377c2",
+                        "#7f7f7f",
+                    ]
+                    colors = default_colors[: len(groups)]
+    
+                for i, group in enumerate(groups):
+                    group_data = mfx[mfx[self.xvar] == group].sort_values(x_var)
+                    x = group_data[x_var].astype(float).values
+                    y = group_data["estimate"].values
+                    c = colors[i % len(colors)]
+                    label = f"{self.xvar}={group}"
+    
+                    has_ci = (
+                        "conf.low" in group_data.columns
+                        and "conf.high" in group_data.columns
+                        and not np.isnan(group_data["conf.low"].values).all()
+                    )
+    
+                    if style == "ribbon":
+                        if has_ci:
+                            ax.fill_between(
+                                x,
+                                group_data["conf.low"].values,
+                                group_data["conf.high"].values,
+                                alpha=0.2,
+                                color=c,
+                                label="_nolegend_",
+                            )
+                        ax.plot(x, y, "-", color=c, linewidth=1.5, label=label)
+                        ax.plot(x, y, "o", color=c, markersize=5)
+                    else:  # errorbar
+                        if has_ci:
+                            yerr = [
+                                y - group_data["conf.low"].values,
+                                group_data["conf.high"].values - y,
+                            ]
+                            ax.errorbar(
+                                x,
+                                y,
+                                yerr=yerr,
+                                fmt="o",
+                                capsize=4,
+                                color=c,
+                                markersize=6,
+                                linewidth=1.5,
+                                capthick=1.5,
+                                label=label,
+                            )
+                        else:
+                            ax.plot(x, y, "o", color=c, markersize=6, label=label)
+    
+                ax.legend(title=self.xvar, loc="best")
+    
+            else:
+                # Single group
+                x = mfx[x_var].astype(float).values
+                y = mfx["estimate"].values
+    
                 has_ci = (
-                    "conf.low" in group_data.columns
-                    and "conf.high" in group_data.columns
-                    and not np.isnan(group_data["conf.low"].values).all()
+                    "conf.low" in mfx.columns
+                    and "conf.high" in mfx.columns
+                    and not np.isnan(mfx["conf.low"].values).all()
                 )
-
+    
                 if style == "ribbon":
                     if has_ci:
                         ax.fill_between(
                             x,
-                            group_data["conf.low"].values,
-                            group_data["conf.high"].values,
+                            mfx["conf.low"].values,
+                            mfx["conf.high"].values,
                             alpha=0.2,
-                            color=c,
+                            color=color,
                             label="_nolegend_",
                         )
-                    ax.plot(x, y, "-", color=c, linewidth=1.5, label=label)
-                    ax.plot(x, y, "o", color=c, markersize=5)
+                    ax.plot(x, y, "-", color=color, linewidth=1.5)
+                    ax.plot(x, y, "o", color=color, markersize=5)
                 else:  # errorbar
                     if has_ci:
-                        yerr = [
-                            y - group_data["conf.low"].values,
-                            group_data["conf.high"].values - y,
-                        ]
+                        yerr = [y - mfx["conf.low"].values, mfx["conf.high"].values - y]
                         ax.errorbar(
                             x,
                             y,
                             yerr=yerr,
                             fmt="o",
                             capsize=4,
-                            color=c,
-                            markersize=6,
-                            linewidth=1.5,
+                            color=color,
+                            markersize=8,
+                            linewidth=2,
                             capthick=1.5,
-                            label=label,
                         )
                     else:
-                        ax.plot(x, y, "o", color=c, markersize=6, label=label)
-
-            ax.legend(title=self.xvar, loc="best")
-
-        else:
-            # Single group
-            x = mfx[x_var].astype(float).values
-            y = mfx["estimate"].values
-
-            has_ci = (
-                "conf.low" in mfx.columns
-                and "conf.high" in mfx.columns
-                and not np.isnan(mfx["conf.low"].values).all()
-            )
-
-            if style == "ribbon":
-                if has_ci:
-                    ax.fill_between(
-                        x,
-                        mfx["conf.low"].values,
-                        mfx["conf.high"].values,
-                        alpha=0.2,
-                        color=color,
-                        label="_nolegend_",
-                    )
-                ax.plot(x, y, "-", color=color, linewidth=1.5)
-                ax.plot(x, y, "o", color=color, markersize=5)
-            else:  # errorbar
-                if has_ci:
-                    yerr = [y - mfx["conf.low"].values, mfx["conf.high"].values - y]
-                    ax.errorbar(
-                        x,
-                        y,
-                        yerr=yerr,
-                        fmt="o",
-                        capsize=4,
-                        color=color,
-                        markersize=8,
-                        linewidth=2,
-                        capthick=1.5,
-                    )
-                else:
-                    ax.plot(x, y, "o", color=color, markersize=8)
-
-        ax.axhline(0, color="black", linewidth=0.8, linestyle="-")
-
-        if type == "event":
-            ax.axvline(-0.5, color="gray", linestyle="--", linewidth=1, alpha=0.7)
-
-        xlabel = {
-            "event": "Event Time (periods relative to treatment)",
-            "group": "Treatment Cohort",
-            "calendar": "Calendar Time",
-        }[type]
-
-        ax.set_xlabel(xlabel, fontsize=11)
-        ax.set_ylabel("Average Treatment Effect", fontsize=11)
-
-        family_str = f" ({self.family})" if self.family else ""
-        ax.set_title(title or f"ETWFE {type.capitalize()} Study{family_str}", fontsize=13)
-
-        ax.grid(True, alpha=0.3)
-        plt.tight_layout()
-
-        return ax
-
+                        ax.plot(x, y, "o", color=color, markersize=8)
+    
+            ax.axhline(0, color="black", linewidth=0.8, linestyle="-")
+    
+            if type == "event":
+                ax.axvline(-1, color="gray", linestyle="--", linewidth=1, alpha=0.7)
+    
+            xlabel = {
+                "event": "Event Time (periods relative to treatment)",
+                "group": "Treatment Cohort",
+                "calendar": "Calendar Time",
+            }[type]
+    
+            ax.set_xlabel(xlabel, fontsize=11)
+            ax.set_ylabel("Average Treatment Effect", fontsize=11)
+    
+            family_str = f" ({self.family})" if self.family else ""
+            ax.set_title(title or f"ETWFE {type.capitalize()} Study{family_str}", fontsize=13)
+    
+            ax.grid(True, alpha=0.3)
+            plt.tight_layout()
+    
+            return ax
 
 def etwfe(
     fml: str,
