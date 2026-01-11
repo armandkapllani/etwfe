@@ -1,7 +1,6 @@
 # ETWFE: Extended Two-Way Fixed Effects
 
 [![PyPI version](https://badge.fury.io/py/etwfe.svg)](https://badge.fury.io/py/etwfe)
-[![CI](https://github.com/armandkapllani/etwfe/actions/workflows/ci.yml/badge.svg)](https://github.com/armandkapllani/etwfe/actions/workflows/ci.yml)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
