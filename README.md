@@ -1,7 +1,7 @@
 # ETWFE: Extended Two-Way Fixed Effects
 
 [![PyPI version](https://badge.fury.io/py/etwfe.svg)](https://badge.fury.io/py/etwfe)
-[![CI](https://github.com/YOUR_USERNAME/etwfe/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/etwfe/actions/workflows/ci.yml)
+[![CI](https://github.com/armandkapllani/etwfe/actions/workflows/ci.yml/badge.svg)](https://github.com/armandkapllani/etwfe/actions/workflows/ci.yml)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
 A Python implementation of the Extended Two-Way Fixed Effects (ETWFE) estimator from Wooldridge (2021, 2023) for difference-in-differences estimation with heterogeneous treatment effects.
