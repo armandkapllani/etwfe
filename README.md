@@ -19,11 +19,6 @@ The solution is to saturate the regression with cohort×time interactions—what
 pip install etwfe
 ```
 
-For development:
-```bash
-pip install etwfe[dev,full]
-```
-
 ## Quick Start
 
 ```python
