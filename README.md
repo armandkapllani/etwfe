@@ -12,6 +12,12 @@ Two-way fixed effects (TWFE) estimation is the dominant approach for causal infe
 
 The solution is to saturate the regression with cohort×time interactions—what Wooldridge calls **extended TWFE (ETWFE)**. This package automates the approach: constructing the saturated specification, estimating via fixed effects, and recovering interpretable treatment effects through marginal effect aggregation.
 
+## Acknowledgements
+
+This Python implementation was inspired by and builds on [Grant McDermott's](https://github.com/grantmcdermott) original [etwfe R package](https://grantmcdermott.com/etwfe/), which served as a key reference for API design and implementation approach. We also build on [pyfixest](https://github.com/py-econometrics/pyfixest) for high-dimensional fixed effects estimation and [marginaleffects](https://github.com/vincentarelbundock/pymarginaleffects) for marginal effects methodology.
+
+See [CONTRIBUTORS.md](CONTRIBUTORS.md) for full acknowledgements.
+
 ## Installation
 
 ```bash
@@ -210,16 +216,6 @@ model.plot(
 - Callaway, B. and Sant'Anna, P. H. (2021). Difference-in-differences with multiple time periods. *Journal of Econometrics*, 225(2), 200-230.
 
 - Wong, J., Forsell, E., Lewis, R., Mao, T., and Wardrop, M. (2021). [You only compress once: Optimal data compression for estimating linear models.](https://arxiv.org/abs/2102.11297) arXiv:2102.11297.
-
-## Acknowledgments
-
-This package builds on several excellent open-source projects:
-
-- **[pyfixest](https://github.com/py-econometrics/pyfixest)** — High-dimensional fixed effects regression in Python
-- **[marginaleffects](https://github.com/vincentarelbundock/pymarginaleffects)** — Marginal effects, predictions, and comparisons
-- **[etwfe (R)](https://grantmcdermott.com/etwfe/)** — The original R implementation by Grant McDermott
-
-We are grateful to the developers of these packages for their contributions to the open-source econometrics ecosystem.
 
 ## License
 
