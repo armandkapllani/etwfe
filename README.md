@@ -219,10 +219,8 @@ model.plot(
 
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/armandkapllani"><img src="https://github.com/armandkapllani.png" width="100px;" alt="Armand Kapllani"/><br /><sub><b>Armand Kapllani</b></sub></a><br /><sub>Author</sub></td>
-    <td align="center"><a href="https://github.com/grantmcdermott"><img src="https://github.com/grantmcdermott.png" width="100px;" alt="Grant McDermott"/><br /><sub><b>Grant McDermott</b></sub></a><br /><sub>Original R package</sub></td>
-    <td align="center"><a href="https://github.com/s3alfisc"><img src="https://github.com/s3alfisc.png" width="100px;" alt="Alexander Fischer"/><br /><sub><b>Alexander Fischer</b></sub></a><br /><sub>pyfixest</sub></td>
-    <td align="center"><a href="https://github.com/vincentarelbundock"><img src="https://github.com/vincentarelbundock.png" width="100px;" alt="Vincent Arel-Bundock"/><br /><sub><b>Vincent Arel-Bundock</b></sub></a><br /><sub>marginaleffects</sub></td>
+    <td align="center"><a href="https://github.com/armandkapllani"><img src="https://github.com/armandkapllani.png" width="60px;" alt="Armand Kapllani"/><br /><sub><b>Armand Kapllani</b></sub></a><br /><sub>Author</sub></td>
+    <td align="center"><a href="https://github.com/grantmcdermott"><img src="https://github.com/grantmcdermott.png" width="60px;" alt="Grant McDermott"/><br /><sub><b>Grant McDermott</b></sub></a><br /><sub>Original R package</sub></td>
   </tr>
 </table>
 
