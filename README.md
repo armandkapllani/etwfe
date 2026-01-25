@@ -1,8 +1,12 @@
 # ETWFE: Extended Two-Way Fixed Effects
 
 [![PyPI version](https://badge.fury.io/py/etwfe.svg)](https://badge.fury.io/py/etwfe)
+[![Downloads](https://static.pepy.tech/badge/etwfe)](https://pepy.tech/project/etwfe)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Documentation](https://img.shields.io/badge/docs-GitHub-blue.svg)](https://github.com/armandkapllani/etwfe#readme)
+[![Dependencies](https://img.shields.io/badge/dependencies-pyfixest-orange.svg)](https://github.com/armandkapllani/etwfe#requirements)
+[![Homepage](https://img.shields.io/badge/homepage-GitHub-black.svg)](https://github.com/armandkapllani/etwfe)
 
 A Python implementation of the Extended Two-Way Fixed Effects (ETWFE) estimator for difference-in-differences designs with staggered treatment adoption.
 
