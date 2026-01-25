@@ -16,8 +16,6 @@ The solution is to saturate the regression with cohort×time interactions—what
 
 This Python implementation was inspired by and builds on [Grant McDermott's](https://github.com/grantmcdermott) original [etwfe R package](https://grantmcdermott.com/etwfe/), which served as a key reference for API design and implementation approach. We also build on [pyfixest](https://github.com/py-econometrics/pyfixest) for high-dimensional fixed effects estimation and [marginaleffects](https://github.com/vincentarelbundock/pymarginaleffects) for marginal effects methodology.
 
-See [CONTRIBUTORS.md](CONTRIBUTORS.md) for full acknowledgements.
-
 ## Installation
 
 ```bash
@@ -216,6 +214,17 @@ model.plot(
 - Callaway, B. and Sant'Anna, P. H. (2021). Difference-in-differences with multiple time periods. *Journal of Econometrics*, 225(2), 200-230.
 
 - Wong, J., Forsell, E., Lewis, R., Mao, T., and Wardrop, M. (2021). [You only compress once: Optimal data compression for estimating linear models.](https://arxiv.org/abs/2102.11297) arXiv:2102.11297.
+
+## Contributors
+
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/armandkapllani"><img src="https://github.com/armandkapllani.png" width="100px;" alt="Armand Kapllani"/><br /><sub><b>Armand Kapllani</b></sub></a><br /><sub>Author</sub></td>
+    <td align="center"><a href="https://github.com/grantmcdermott"><img src="https://github.com/grantmcdermott.png" width="100px;" alt="Grant McDermott"/><br /><sub><b>Grant McDermott</b></sub></a><br /><sub>Original R package</sub></td>
+    <td align="center"><a href="https://github.com/s3alfisc"><img src="https://github.com/s3alfisc.png" width="100px;" alt="Alexander Fischer"/><br /><sub><b>Alexander Fischer</b></sub></a><br /><sub>pyfixest</sub></td>
+    <td align="center"><a href="https://github.com/vincentarelbundock"><img src="https://github.com/vincentarelbundock.png" width="100px;" alt="Vincent Arel-Bundock"/><br /><sub><b>Vincent Arel-Bundock</b></sub></a><br /><sub>marginaleffects</sub></td>
+  </tr>
+</table>
 
 ## License
 
